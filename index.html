@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chordinate</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>Play Chords <span class="accent">With Your Hand</span></h1>
+      <p class="subtitle">Hold your hand up to your webcam. Each finger you raise adds a note &mdash; thumb is the root, index the 3rd, middle the 5th, ring the 7th, pinky the octave &mdash; so raising several together plays a real chord. Move your hand left/right to walk through a chord progression. Runs <strong>entirely in your browser</strong>, no server, video never leaves your device.</p>
+    </header>
+
+    <main class="layout">
+      <section class="camera-panel">
+        <div id="startOverlay" class="start-overlay">
+          <button id="startBtn" class="start-btn">Start camera &amp; sound</button>
+          <p class="start-hint">Needs camera access and a click to enable audio (browser requirement).</p>
+        </div>
+
+        <div id="loadingOverlay" class="loading-overlay hidden">
+          <div class="spinner"></div>
+          <div class="loading-text" id="loadingText">Loading hand-tracking model&hellip;</div>
+        </div>
+
+        <div class="video-wrap">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="overlay"></canvas>
+        </div>
+
+        <div id="errorBanner" class="error-banner hidden"></div>
+      </section>
+
+      <aside class="control-panel">
+        <div class="control-block">
+          <label>
+            Instrument
+            <select id="instrument">
+              <option>Warm Synth</option>
+              <option>Pluck</option>
+              <option>Bell</option>
+              <option>Pad</option>
+              <option>Marimba</option>
+            </select>
+          </label>
+
+          <label>
+            Key
+            <select id="keyRoot">
+              <option>C</option><option>C#</option><option>D</option><option>D#</option>
+              <option>E</option><option>F</option><option>F#</option><option>G</option>
+              <option>G#</option><option>A</option><option>A#</option><option>B</option>
+            </select>
+          </label>
+
+          <label>
+            Scale
+            <select id="scale">
+              <option value="major">Major</option>
+              <option value="minor">Minor</option>
+              <option value="majorPentatonic">Major Pentatonic</option>
+              <option value="minorPentatonic">Minor Pentatonic</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="chord-display">
+          <div class="value-label">Current chord</div>
+          <div id="chordName" class="chord-name">&mdash;</div>
+          <div id="chordZones" class="chord-zones"></div>
+        </div>
+
+        <div class="finger-legend">
+          <div class="value-label">Finger &rarr; chord tone</div>
+          <ul>
+            <li><span class="dot thumb"></span> Thumb &mdash; root</li>
+            <li><span class="dot index"></span> Index &mdash; 3rd</li>
+            <li><span class="dot middle"></span> Middle &mdash; 5th</li>
+            <li><span class="dot ring"></span> Ring &mdash; 7th</li>
+            <li><span class="dot pinky"></span> Pinky &mdash; octave</li>
+          </ul>
+        </div>
+
+        <div class="tech-note">
+          <h3>How it works</h3>
+          <ul>
+            <li>MediaPipe's Hand Landmarker (WebAssembly) tracks 21 points per hand in real time from your webcam.</li>
+            <li>A finger counts as "raised" when its tip is far enough from the wrist relative to its middle joint.</li>
+            <li>Notes are synthesized live with Tone.js/Web Audio &mdash; nothing is pre-recorded.</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      Built with MediaPipe Hand Landmarker + Tone.js &middot; <a href="https://github.com/Allix05/chordinate" target="_blank" rel="noopener">source on GitHub</a>
+    </footer>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

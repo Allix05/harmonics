@@ -1,0 +1,11 @@
+{
+  "name": "chordinate",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Play chords in the air: webcam hand tracking + Web Audio synthesis, 100% client-side.",
+  "scripts": {
+    "test": "node --test",
+    "serve": "python -m http.server 8090"
+  }
+}
