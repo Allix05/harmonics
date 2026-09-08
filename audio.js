@@ -3,6 +3,17 @@
 export function createInstruments(Tone) {
   const make = (Voice, options) => new Tone.PolySynth(Voice, options).toDestination();
 
+  // Electric guitar: a sawtooth voice pushed through overdrive-style
+  // distortion and a lowpass filter to tame the harshness, plus a touch of
+  // chorus for that shimmery clean-electric character.
+  const guitarDistortion = new Tone.Distortion(0.35).toDestination();
+  const guitarChorus = new Tone.Chorus(4, 2.5, 0.3).connect(guitarDistortion).start();
+  const guitarFilter = new Tone.Filter(3200, "lowpass").connect(guitarChorus);
+  const electricGuitar = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: "sawtooth" },
+    envelope: { attack: 0.005, decay: 0.3, sustain: 0.35, release: 0.4 },
+  }).connect(guitarFilter);
+
   return {
     "Warm Synth": make(Tone.Synth, {
       oscillator: { type: "triangle" },
@@ -27,6 +38,7 @@ export function createInstruments(Tone) {
       oscillator: { type: "sine" },
       envelope: { attack: 0.001, decay: 0.5, sustain: 0, release: 0.3 },
     }),
+    "Electric Guitar": electricGuitar,
   };
 }
 
