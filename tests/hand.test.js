@@ -34,6 +34,26 @@ test("all five fingers extended", () => {
   assert.deepEqual(fingerExtension(lm), [true, true, true, true, true]);
 });
 
+test("thumb tucked near the palm (curled) is not detected as extended", () => {
+  const lm = baseLandmarks();
+  lm[LM.WRIST] = { x: 0.5, y: 0.9, z: 0 };
+  lm[LM.INDEX_MCP] = { x: 0.55, y: 0.55, z: 0 };
+  lm[LM.THUMB_MCP] = { x: 0.42, y: 0.75, z: 0 };
+  lm[LM.THUMB_TIP] = { x: 0.53, y: 0.58, z: 0 }; // curled in, close to index base
+  const result = fingerExtension(lm);
+  assert.equal(result[0], false, "thumb tucked against the palm should not read as extended");
+});
+
+test("thumb splayed away from the palm is detected as extended", () => {
+  const lm = baseLandmarks();
+  lm[LM.WRIST] = { x: 0.5, y: 0.9, z: 0 };
+  lm[LM.INDEX_MCP] = { x: 0.55, y: 0.55, z: 0 };
+  lm[LM.THUMB_MCP] = { x: 0.42, y: 0.75, z: 0 };
+  lm[LM.THUMB_TIP] = { x: 0.15, y: 0.75, z: 0 }; // splayed far out to the side
+  const result = fingerExtension(lm);
+  assert.equal(result[0], true, "thumb splayed out should read as extended");
+});
+
 test("FingerDebouncer ignores single-frame flicker", () => {
   const debouncer = new FingerDebouncer(3);
   debouncer.update([false, false, false, false, false]);

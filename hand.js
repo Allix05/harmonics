@@ -15,16 +15,14 @@ export const LM = {
 
 export const FINGER_NAMES = ["thumb", "index", "middle", "ring", "pinky"];
 
-// [tipIndex, referenceJointIndex] per finger. A finger counts as extended
-// when its tip is meaningfully farther from the wrist than its reference
-// joint is -- a simple, rotation-tolerant heuristic (it does not require
-// the hand to be upright) that works well for a hand held up facing the
-// camera, which is this app's expected pose. It is not anatomically
-// precise (particularly for the thumb, which moves sideways rather than
-// along the same axis as the other fingers) but is good enough to drive
-// an instrument.
+// [tipIndex, referenceJointIndex] per non-thumb finger. A finger counts as
+// extended when its tip is meaningfully farther from the wrist than its
+// reference joint is -- a simple, rotation-tolerant heuristic (it does not
+// require the hand to be upright) that works well for a hand held up
+// facing the camera, which is this app's expected pose. This works for
+// the four fingers because curling them draws the tip back in *toward*
+// the wrist.
 const FINGER_JOINTS = [
-  [LM.THUMB_TIP, LM.THUMB_MCP],
   [LM.INDEX_TIP, LM.INDEX_PIP],
   [LM.MIDDLE_TIP, LM.MIDDLE_PIP],
   [LM.RING_TIP, LM.RING_PIP],
@@ -36,16 +34,34 @@ function dist2D(a, b) {
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+// The thumb doesn't curl toward the wrist the way the other fingers do --
+// it swings sideways across the palm -- so its tip stays roughly the same
+// distance from the wrist whether curled or extended, and the wrist-based
+// heuristic above reads it as "extended" almost all the time. Instead,
+// measure from the index finger's base joint (a stable point on the palm
+// that doesn't move with thumb curl): a curled thumb tucks in close to it,
+// an extended thumb splays out away from it.
+function thumbExtended(landmarks, threshold) {
+  const indexMcp = landmarks[LM.INDEX_MCP];
+  const tipDist = dist2D(indexMcp, landmarks[LM.THUMB_TIP]);
+  const refDist = dist2D(indexMcp, landmarks[LM.THUMB_MCP]);
+  return tipDist > refDist * threshold;
+}
+
 // Returns a length-5 boolean array [thumb, index, middle, ring, pinky].
 // `extendThreshold` is how much farther (as a ratio) the tip must be from
-// the wrist than the reference joint is, to count as "extended".
-export function fingerExtension(landmarks, extendThreshold = 1.2) {
+// its reference point than the reference joint is, to count as "extended".
+// `thumbThreshold` is the equivalent ratio for the thumb's own (different)
+// heuristic; it typically needs to be a bit higher since a fully splayed
+// thumb moves relatively less than a fully extended finger does.
+export function fingerExtension(landmarks, extendThreshold = 1.2, thumbThreshold = 1.4) {
   const wrist = landmarks[LM.WRIST];
-  return FINGER_JOINTS.map(([tipIdx, refIdx]) => {
+  const nonThumb = FINGER_JOINTS.map(([tipIdx, refIdx]) => {
     const tipDist = dist2D(wrist, landmarks[tipIdx]);
     const refDist = dist2D(wrist, landmarks[refIdx]);
     return tipDist > refDist * extendThreshold;
   });
+  return [thumbExtended(landmarks, thumbThreshold), ...nonThumb];
 }
 
 // Debounces raw per-frame finger-extension booleans so landmark jitter
