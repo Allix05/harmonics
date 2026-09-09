@@ -21,6 +21,7 @@
 
 html, body {
   margin: 0;
+  color-scheme: dark; /* native popups (select dropdowns, etc.) render dark too */
   background:
     radial-gradient(900px 500px at 50% -10%, rgba(242, 181, 68, 0.1) 0%, transparent 60%),
     radial-gradient(700px 500px at 100% 100%, rgba(224, 102, 60, 0.08) 0%, transparent 60%),
