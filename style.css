@@ -184,6 +184,38 @@ select {
   cursor: pointer;
 }
 
+.calibration {
+  background: #0e1424;
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 20px;
+}
+
+.calibration .hint {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.calibration input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.calibration-readout {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.calibration-readout span {
+  color: var(--text);
+  font-weight: 600;
+}
+
 .value-label {
   font-size: 0.75rem;
   text-transform: uppercase;

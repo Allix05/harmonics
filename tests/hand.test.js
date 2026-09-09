@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { fingerExtension, FingerDebouncer, LM } from "../hand.js";
+import { fingerExtension, thumbSplayRatio, FingerDebouncer, LM } from "../hand.js";
 
 // Builds a 21-point landmark array with everything bunched at the wrist,
 // then overrides specific joints for the finger(s) under test.
@@ -44,14 +44,30 @@ test("thumb tucked near the palm (curled) is not detected as extended", () => {
   assert.equal(result[0], false, "thumb tucked against the palm should not read as extended");
 });
 
-test("thumb splayed away from the palm is detected as extended", () => {
+test("thumb splayed far away from the palm is detected as extended (default threshold)", () => {
   const lm = baseLandmarks();
   lm[LM.WRIST] = { x: 0.5, y: 0.9, z: 0 };
   lm[LM.INDEX_MCP] = { x: 0.55, y: 0.55, z: 0 };
   lm[LM.THUMB_MCP] = { x: 0.42, y: 0.75, z: 0 };
-  lm[LM.THUMB_TIP] = { x: 0.15, y: 0.75, z: 0 }; // splayed far out to the side
+  lm[LM.THUMB_TIP] = { x: 0.05, y: 0.80, z: 0 }; // splayed well out to the side
   const result = fingerExtension(lm);
-  assert.equal(result[0], true, "thumb splayed out should read as extended");
+  assert.equal(result[0], true, "thumb splayed far out should read as extended");
+});
+
+test("thumbSplayRatio exposes the raw ratio for calibration, and a custom threshold can use it", () => {
+  const lm = baseLandmarks();
+  lm[LM.INDEX_MCP] = { x: 0.55, y: 0.55, z: 0 };
+  lm[LM.THUMB_MCP] = { x: 0.42, y: 0.75, z: 0 };
+  lm[LM.THUMB_TIP] = { x: 0.15, y: 0.75, z: 0 }; // moderately splayed
+  const ratio = thumbSplayRatio(lm);
+  assert.ok(ratio > 1, "moderately splayed thumb should have ratio > 1");
+
+  // A lower, more permissive threshold should pick this pose up as extended
+  // even though the default (higher) threshold might not.
+  const permissive = fingerExtension(lm, 1.2, ratio - 0.1);
+  const strict = fingerExtension(lm, 1.2, ratio + 0.1);
+  assert.equal(permissive[0], true);
+  assert.equal(strict[0], false);
 });
 
 test("FingerDebouncer ignores single-frame flicker", () => {

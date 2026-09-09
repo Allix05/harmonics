@@ -1,7 +1,7 @@
 import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 import * as Tone from "https://cdn.jsdelivr.net/npm/tone@14.8.49/+esm";
 
-import { fingerExtension, FingerDebouncer, FINGER_NAMES, handXPosition } from "./hand.js";
+import { fingerExtension, thumbSplayRatio, FingerDebouncer, FINGER_NAMES, handXPosition } from "./hand.js";
 import { chordForHand, PROGRESSION_DEGREES } from "./music.js";
 import { createInstruments, VoiceManager } from "./audio.js";
 
@@ -29,6 +29,14 @@ const keyRootSel = document.getElementById("keyRoot");
 const scaleSel = document.getElementById("scale");
 const chordNameEl = document.getElementById("chordName");
 const chordZonesEl = document.getElementById("chordZones");
+const thumbSensitivitySlider = document.getElementById("thumbSensitivity");
+const thumbThresholdValueEl = document.getElementById("thumbThresholdValue");
+const thumbRatioValueEl = document.getElementById("thumbRatioValue");
+
+thumbThresholdValueEl.textContent = Number(thumbSensitivitySlider.value).toFixed(2);
+thumbSensitivitySlider.addEventListener("input", () => {
+  thumbThresholdValueEl.textContent = Number(thumbSensitivitySlider.value).toFixed(2);
+});
 
 for (let i = 0; i < PROGRESSION_DEGREES.length; i++) {
   const zone = document.createElement("div");
@@ -137,11 +145,17 @@ function loop() {
         for (let f = 0; f < 5; f++) voiceManager.noteOff(`${handIdx}:${f}`);
         handPresent[handIdx] = false;
       }
+      if (handIdx === 0) thumbRatioValueEl.textContent = "—";
       continue;
     }
     handPresent[handIdx] = true;
 
-    const raw = fingerExtension(landmarks);
+    if (handIdx === 0) {
+      thumbRatioValueEl.textContent = thumbSplayRatio(landmarks).toFixed(2);
+    }
+
+    const thumbThreshold = Number(thumbSensitivitySlider.value);
+    const raw = fingerExtension(landmarks, 1.2, thumbThreshold);
     const active = debouncers[handIdx].update(raw);
     drawHand(landmarks, active);
 

@@ -67,6 +67,16 @@
           </label>
         </div>
 
+        <div class="calibration">
+          <div class="value-label">Thumb sensitivity</div>
+          <p class="hint">Thumb detection varies by hand and resting pose &mdash; if it's always on or never triggers, drag this while watching the live number: hold your thumb <em>curled in</em> and note the value, then <em>splayed out</em> and note that value, and set the slider roughly halfway between.</p>
+          <input type="range" id="thumbSensitivity" min="1.1" max="3.5" step="0.05" value="2.0">
+          <div class="calibration-readout">
+            threshold: <span id="thumbThresholdValue">2.00</span>
+            &nbsp;|&nbsp; live ratio: <span id="thumbRatioValue">&mdash;</span>
+          </div>
+        </div>
+
         <div class="chord-display">
           <div class="value-label">Current chord</div>
           <div id="chordName" class="chord-name">&mdash;</div>

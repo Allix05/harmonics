@@ -36,32 +36,40 @@ function dist2D(a, b) {
 
 // The thumb doesn't curl toward the wrist the way the other fingers do --
 // it swings sideways across the palm -- so its tip stays roughly the same
-// distance from the wrist whether curled or extended, and the wrist-based
-// heuristic above reads it as "extended" almost all the time. Instead,
-// measure from the index finger's base joint (a stable point on the palm
-// that doesn't move with thumb curl): a curled thumb tucks in close to it,
-// an extended thumb splays out away from it.
-function thumbExtended(landmarks, threshold) {
+// distance from the wrist whether curled or extended, and a wrist-based
+// heuristic reads it as "extended" almost all the time. Instead, measure
+// from the index finger's base joint (a stable point on the palm that
+// doesn't move with thumb curl): a curled thumb tucks in close to it, a
+// splayed thumb sits farther away.
+//
+// How "close" is curled and how "far" is splayed varies a fair amount
+// between hands and resting poses (a loose fist often still holds the
+// thumb somewhat away from the palm), so there's no single threshold that
+// is right for everyone. `thumbSplayRatio` exposes the raw measurement so
+// the UI can show it live and let each person calibrate their own
+// threshold via the sensitivity slider, rather than guessing blindly.
+export function thumbSplayRatio(landmarks) {
   const indexMcp = landmarks[LM.INDEX_MCP];
   const tipDist = dist2D(indexMcp, landmarks[LM.THUMB_TIP]);
   const refDist = dist2D(indexMcp, landmarks[LM.THUMB_MCP]);
-  return tipDist > refDist * threshold;
+  return refDist === 0 ? 0 : tipDist / refDist;
 }
 
 // Returns a length-5 boolean array [thumb, index, middle, ring, pinky].
 // `extendThreshold` is how much farther (as a ratio) the tip must be from
 // its reference point than the reference joint is, to count as "extended".
 // `thumbThreshold` is the equivalent ratio for the thumb's own (different)
-// heuristic; it typically needs to be a bit higher since a fully splayed
-// thumb moves relatively less than a fully extended finger does.
-export function fingerExtension(landmarks, extendThreshold = 1.2, thumbThreshold = 1.4) {
+// heuristic; it typically needs to be higher and benefits from per-person
+// calibration (see `thumbSplayRatio`).
+export function fingerExtension(landmarks, extendThreshold = 1.2, thumbThreshold = 2.0) {
   const wrist = landmarks[LM.WRIST];
   const nonThumb = FINGER_JOINTS.map(([tipIdx, refIdx]) => {
     const tipDist = dist2D(wrist, landmarks[tipIdx]);
     const refDist = dist2D(wrist, landmarks[refIdx]);
     return tipDist > refDist * extendThreshold;
   });
-  return [thumbExtended(landmarks, thumbThreshold), ...nonThumb];
+  const thumb = thumbSplayRatio(landmarks) > thumbThreshold;
+  return [thumb, ...nonThumb];
 }
 
 // Debounces raw per-frame finger-extension booleans so landmark jitter
