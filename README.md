@@ -1,11 +1,11 @@
-# Chordinate
+# Harmonics
 
-[![CI](https://github.com/Allix05/chordinate/actions/workflows/ci.yml/badge.svg)](https://github.com/Allix05/chordinate/actions/workflows/ci.yml)
+[![CI](https://github.com/Allix05/harmonics/actions/workflows/ci.yml/badge.svg)](https://github.com/Allix05/harmonics/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Play chords in the air. Hold your hand up to your webcam and each finger you raise adds a note &mdash; **thumb = root, index = 3rd, middle = 5th, ring = 7th, pinky = octave** &mdash; so raising several fingers together plays a real chord, not just a single tone. Move your hand left/right to walk through a chord progression. Pick from six synthesized instruments.
 
-**[Try it live](https://allix05.github.io/chordinate/)** &mdash; runs entirely in your browser. Your camera feed never leaves your device: there's no backend, nothing is uploaded anywhere.
+**[Try it live](https://allix05.github.io/harmonics/)** &mdash; runs entirely in your browser. Your camera feed never leaves your device: there's no backend, nothing is uploaded anywhere.
 
 <!-- SCREENSHOT_PLACEHOLDER -->
 
