@@ -1,7 +1,7 @@
 # Harmonics
 
 [![CI](https://github.com/Allix05/harmonics/actions/workflows/ci.yml/badge.svg)](https://github.com/Allix05/harmonics/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: All Rights Reserved](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
 
 Play chords in the air. Hold your hand up to your webcam and each finger you raise adds a note &mdash; **thumb = root, index = 3rd, middle = 5th, ring = 7th, pinky = octave** &mdash; so raising several fingers together plays a real chord, not just a single tone. Move your hand left/right to walk through a chord progression. Pick from six synthesized instruments.
 
@@ -73,4 +73,4 @@ tests/        node:test unit tests for hand.js and music.js
 
 ## License
 
-MIT &mdash; see [LICENSE](LICENSE).
+All Rights Reserved &mdash; see [LICENSE](LICENSE). Source is public for portfolio/demonstration purposes; reuse requires permission.
